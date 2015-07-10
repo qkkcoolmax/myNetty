@@ -1,0 +1,270 @@
+<html>
+<head>
+<title>Web Socket Test</title>
+
+
+<!-- 新 Bootstrap 核心 CSS 文件 -->
+<link rel="stylesheet"
+	href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+<!-- 可选的Bootstrap主题文件（一般不用引入） -->
+<link rel="stylesheet"
+	href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+<script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+
+
+<script type="text/javascript">
+	var socket;
+	if (!window.WebSocket) {
+		window.WebSocket = window.MozWebSocket;
+	}
+
+	//加载完成这个页面就马上发送websocket请求。
+	if (window.WebSocket) {
+		socket = new WebSocket("ws://localhost:60000/ws"); //傻逼了，用本地的地址在连接。;
+
+		socket.onmessage = function(event) {
+			var ta = document.getElementById('responseText');
+			var sa = document.getElementById('tbody');
+			var redata = event.data;
+			var vv = "";
+			if (redata.startWith("∏∑") && redata.endWith("∏∑")) {
+
+				var str = redata.split("∏∑");
+				var userTotal = parseInt(str[1]);
+
+				for ( var i = 2; i <= userTotal + 1; i++) {
+					vv = vv + "<tr><td>" + str[i] + "</td></tr>"
+				}
+				document.getElementById('spf').innerHTML = userTotal;
+				sa.innerHTML = vv;
+			} else {//不是用户上线信息，是聊天信息  
+				ta.value = ta.value + ' \n' + event.data;
+				document.getElementById('responseText').scrollTop = document
+						.getElementById('responseText').scrollHeight;
+			}
+
+		};
+
+		socket.onopen = function(event) {
+			var ta = document.getElementById('responseText');
+			ta.value = "Web Socket opened!";
+			//login();
+		};
+
+		socket.onclose = function(event) {
+			var ta = document.getElementById('responseText');
+			ta.value = ta.value + "Web Socket closed" + event.wasClean;
+			document.getElementById('responseText').scrollTop = document
+					.getElementById('responseText').scrollHeight;
+		};
+	};
+
+	function login() {
+		var value = prompt('输入你的大名：', '默认名字');
+		if (value == null) {
+			alert('你取消了输入！');
+		} else if (value == '') {
+			alert('姓名输入为空，请重新输入！');
+			show_prompt();
+		} else {
+			send("∏∑" + value + "∏∑");
+		}
+
+	};
+
+	function send(message) {
+		if (!window.WebSocket) {
+			return;
+		}
+		if (socket.readyState == WebSocket.OPEN) {
+			socket.send(message);
+			document.getElementById('mesg').value = '';
+			document.getElementById('mesg').select();
+		} else {
+			alert("The socket is not open.");
+		}
+	}
+
+	function ekeyup(e) {
+
+		var keynum
+		var keychar
+		var numcheck
+
+		if (window.event) // IE
+		{
+			keynum = e.keyCode
+		}
+		console.log("sdfds");
+		if (e.which) // Netscape/Firefox/Opera
+		{
+			keynum = e.which
+		}
+
+		if (keynum == 13 && e.ctrlKey)//Enter 
+		{
+			document.getElementById("button1").click();
+			document.getElementById('responseText').focus();
+			document.getElementById('mesg').focus();
+		}
+
+	}
+
+	//自定义的几个切割字符串的函数,暂时不用
+	String.prototype.endWith = function(s) {
+		if (s == null || s == "" || this.length == 0 || s.length > this.length)
+			return false;
+		if (this.substring(this.length - s.length) == s)
+			return true;
+		else
+			return false;
+		return true;
+	}
+	String.prototype.startWith = function(s) {
+		if (s == null || s == "" || this.length == 0 || s.length > this.length)
+			return false;
+		if (this.substr(0, s.length) == s)
+			return true;
+		else
+			return false;
+		return true;
+	}
+</script>
+</head>
+<!-- <body onkeydown="ekeyup(event)" style="text-align:center;">
+ <div>
+  <form onsubmit="return false;" >
+   
+   <h3 id="pushob">Output</h3>
+   <textarea id="responseText" style="width: 500px;  height:  300px;"></textarea>
+   <br><br><br><br>
+   <textarea id="mesg" name="message" placeholder="请输入聊天内容" style="width: 400px;  height:  50px;" onfocus="this.value=''"></textarea>
+   <input id="button1" type="button" value="发送"onclick="send(this.form.message.value)" >
+  </form>
+  </div>
+<div><textarea id="userText" style="width: 500px;  height:  300px;"></textarea>
+</div>
+ </body> -->
+<body
+	style="background: #f8f8f8 url(../img/51.jpg);background-position: center;"
+	onkeydown="ekeyup(event)" style="text-align:center;">
+
+	<div class="container" style="padding:5px;width:100%">
+		<div class="navbar navbar-default" style="padding:0;border:none;">
+			<div class="navbar-inner" style="padding:0;">
+				<div class="navbar-header" style="padding:0;">
+					<div class="btn btn-primary btn-lg btn-block"
+						onclick="introduction();"
+						style="border-radius: 0px;line-height: 1.6;">
+						<span class="glyphicon glyphicon-fire"></span>&nbsp&nbsp&nbspQChat
+					</div>
+				</div>
+				<ul class="nav navbar-nav  ">
+					<li><a id="dataCleaning" href="javascript:void(0);">系統介紹</a></li>
+					<li class="divider-vertical"></li>
+					<li><a href=""></a></li>
+					<li class="divider-vertical"></li>
+				</ul>
+				<ul class="nav navbar-nav  ">
+					<li><a id="dataCleaning" href="javascript:void(0);">联系我们</a></li>
+					<li class="divider-vertical"></li>
+					<li><a href=""></a></li>
+					<li class="divider-vertical"></li>
+				</ul>
+			</div>
+		</div>
+
+		<div id="iframe">
+			<div id='content' class='row-fluid'>
+				<div class='col-sm-9 main'
+					style=" padding:5px;background-color:;height:100%;">
+					<div class="panel panel-default"
+						style="border:none;background:rgba(50,50,50,.5);">
+						<div class="panel-body" style="height:100%">
+							<form role="form">
+								<div class="form-group">
+									<textarea id="responseText" class="form-control"
+										style="font-size:16px; color:#FFFFFF;background:transparent;width:950px ;height:  400px;"
+										onfocus="this.value=''" disabled></textarea>
+								</div>
+							</form>
+							<form class="form-inline" role="form">
+								<div class="form-group">
+									<textarea id="mesg" class="form-control" placeholder="请输入聊天内容"
+										style="background:transparent;width:800px ;height:  150px;"
+										onfocus="this.value=''"></textarea>
+								</div>
+								&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+								<button id="button1" type="button"
+									style="width:110px;height:110px;"
+									class="btn btn-primary btn-lg"
+									onclick="send(this.form.mesg.value)">go</button>
+							</form>
+
+						</div>
+
+
+					</div>
+				</div>
+			</div>
+			<div class='col-sm-3 sidebar'
+				style="padding:5px; background-color:;height:100%;">
+
+				<div class="panel panel-default"
+					style="border:none;background:rgba(50,50,50,.5);">
+					<div class="panel-body" style="height:100%; border:none;">
+						<h2 style="color:#fff;">
+							Online user<span>&nbsp&nbsp<font id="spf"
+								style="font-family:courier" color="red"></font></span>
+						</h2>
+						<!-- <ul class="nav nav-tabs nav-stacked">
+							<li><a href='#'>平台前景</a></li>
+							<li class="divider"></li>
+							<li><a href='#'>友情加盟</a></li>
+							<li class="divider"></li>
+							<li><a href='#'>联系我们</a></li>
+						</ul> -->
+
+
+
+						<div style="overflow-y:auto;width:90%;height:80%">
+
+							<table id="userText" class="table table-hover table-condensed"
+								style="font-size:16px; color:#FFFFFF;">
+								<!-- <caption>上下文表格布局</caption> -->
+								<thead>
+									<tr>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody id="tbody">
+
+								</tbody>
+							</table>
+
+						</div>
+
+
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	</div>
+	<div style="text-align:center;height: 30px; background:transparent ; ">
+		<div class="footer">© edit by q in 2016</div>
+	</div>
+
+</body>
+
+</html>
+l
